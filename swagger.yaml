@@ -1,0 +1,719 @@
+swagger: "2.0"
+info:
+  title: "Proyecto Delilah Resto"
+  description: "Proyecto BackEnd orientado a un sistemas de pedidos para un restaurante."
+  version: "1.0.0"
+  termsOfService: "http://delilahresto/terms/"
+  contact:
+    email: "info@delilahresto.com"
+host: "localhost:3000"
+basePath: "/"
+tags:
+- name: "Usuarios"
+  description: "EndPoints"
+- name: "Pedidos"
+  description: "EndPoints"
+- name: "Productos"
+  description: "EndPoints"
+schemes:
+- "http"
+paths:
+  /usuario/consultar/{nombre_usuario}:
+    get:
+      tags:
+      - "Usuarios"
+      summary: "Consultar datos de usuario"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "nombre_usuario"
+        description: "Ingrese nombre de usuario (o mail personal)."
+        in: "path"
+        required: true
+        type: "string"
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"
+        description: "Ingrese el token generado anteponiendo 'bearer ' "
+      responses:
+        "200":
+          description: "Operacion Exitosa"
+          schema:
+            $ref: "#/definitions/Usuario_Consultar"
+        "403":
+          description: "Usuario diferente al del token, por favor verifique!"
+        "x-*":
+          schema:
+            $ref: "#/definitions/Error_Default"
+
+  /usuario/ingresar:
+    post:
+      tags:
+      - "Usuarios"
+      summary: "Loguear usuario"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Ingrese su nombre de usuario (o mail personal) junto a su contraseña"
+        required: true
+        schema:
+          $ref: "#/definitions/Usuario_Ingresar"
+      responses:
+        "200":
+          description: "Operacion Exitosa"
+          schema:
+            $ref: "#/definitions/Token"
+        "400":
+          description: "Usuario/Password invalidos"
+        "x-*":
+          schema:
+            $ref: "#/definitions/Error_Default"
+
+  /usuario/crear:
+    post:
+      tags:
+      - "Usuarios"
+      summary: "Crear usuario"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Ingrese todos los valores requeridos por favor"
+        required: true
+        schema:
+          $ref: "#/definitions/Crear_Usuario"
+      responses:
+        "201":
+          description: "Usuario creado correctamente"
+        "400":
+          description: "Ingrese todos los datos requeridos por favor!"
+        "409":
+          description: "Usuario existente, por favor utilice otro nombre de usuario!"
+        "x-*":
+          schema:
+            $ref: "#/definitions/Error_Default"
+            
+  /usuario/actualizar/{nombre_usuario}:
+    put:
+      tags:
+      - "Usuarios"
+      summary: "Actualizar usuario"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "nombre_usuario"
+        description: "Ingrese nombre de usuario (o mail personal)."
+        in: "path"
+        required: true
+        type: "string"
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"
+        description: "Ingrese el token generado anteponiendo 'bearer ' "
+      - in: "body"
+        name: "body"
+        description: "Parametros para actualizar usuario"
+        schema:
+          $ref: "#/definitions/Actualizar_Usuario"
+      responses:
+        "200":
+          description: "Usuario actualizado correctamente"
+        "400":
+          description: "Ingrese todos los datos requeridos por favor!"
+        "403":
+          description: "Peticion no autorizada"
+        "x-*":
+          schema:
+            $ref: "#/definitions/Error_Default"
+
+  /usuario/eliminar/{nombre_usuario}:
+    delete:
+      tags:
+      - "Usuarios"
+      summary: "Eliminar usuario"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "nombre_usuario"
+        description: "Ingrese nombre de usuario (o mail personal)."
+        in: "path"
+        required: true
+        type: "string"
+      - name: "Authorization"
+        in: "header"
+        required: true
+        type: "string"
+        description: "Ingrese el token generado anteponiendo 'bearer ' "
+      responses:
+        "200":
+          description: "Usuario eliminado correctamente!"
+        "400":
+          description: "No se ha podido eliminar el usuario, intente nuevamente!"
+        "403":
+          description: "Usuario diferente al del token, por favor verifique!"
+        "x-*":
+          schema:
+            $ref: "#/definitions/Error_Default"
+            
+  /pedidos/consulta/{nombre_usuario}:        
+    get:
+      tags:
+      - "Pedidos"
+      summary: "Consulta todos los pedidos realizados por el cliente"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "nombre_usuario"
+        description: "Ingrese nombre de usuario (o mail personal)."
+        in: "path"
+        required: true
+        type: "string"
+      - name: "Authorization"
+        description: "Ingrese el token generado anteponiendo 'bearer ' "
+        in: "header"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "Operacion Exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Pedidos"
+        "403":
+          description: "Peticion no autorizada"
+        "404":
+          description: "URL icorrecta"
+        "x-*":
+          schema:
+            $ref: "#/definitions/Error_Default"
+            
+  /pedidos/seguir/{nombre_usuario}:
+    get:
+      tags:
+      - "Pedidos"
+      summary: "Consultar pedido realizado por el cliente"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "nombre_usuario"
+        description: "Ingrese nombre de usuario (o mail personal)."
+        in: "path"
+        required: true
+        type: "string"
+      - name: "id_pedido"
+        in: "query"
+        required: true
+        type: "integer"
+      - name: "Authorization"
+        description: "Ingrese el token generado anteponiendo 'bearer ' "
+        in: "header"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "Operaccion Exitosa"
+          schema:
+            $ref: "#/definitions/Pedidos"
+        "403":
+          description: "Peticion no autorizada"
+        "404":
+          description: "URL icorrecta"
+        "x-*":
+          schema:
+            $ref: "#/definitions/Error_Default"
+            
+  /pedidos/confirmar/{nombre_usuario}:
+    post:
+      tags:
+      - "Pedidos"
+      summary: "Agregar y Confirmar pedido del Cliente"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "nombre_usuario"
+        description: "Ingrese nombre de usuario (o mail personal)."
+        in: "path"
+        required: true
+        type: "string"
+      - name: "Authorization"
+        description: "Ingrese el token generado anteponiendo 'bearer ' "
+        in: "header"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Forma de Pago 1 -> Efectivo, 2 -> Tarjeta de debito 3 -> Tarjeta de credito. En la seccion de productos (array) agregar el ID del producto y la cantidad que desea pedir del mismo. Si se desea agregar mas productos se debe agregar dentro del mismo array pero en otro objeto separados por coma cada objeto dentro del array"
+        required: true
+        schema:
+          $ref: "#/definitions/Pedido_Confirmar"
+      responses:
+        "201":
+          description: "Pedido confirmado"
+          schema:
+            $ref: "#/definitions/Pedido_Confirmado"
+        "403":
+          description: "Peticion no autorizada"
+        "404":
+          description: "Producto inexistente, por favor intente de nuevo!"
+        "x-*":
+          schema:
+            $ref: "#/definitions/Error_Default"
+            
+  /pedidos/avanzar/{nombre_usuario}:
+    put:
+      tags:
+      - "Pedidos"
+      summary: "Confirmar y avanzar estado del pedido --> (SOLO ADMIN)"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "nombre_usuario"
+        description: "Ingrese nombre de usuario (o mail personal)."
+        in: "path"
+        required: true
+        type: "string"
+      - name: "id_pedido"
+        in: "query"
+        required: true
+        type: "integer"
+      - name: "Authorization"
+        description: "Ingrese el token generado anteponiendo 'bearer ' "
+        in: "header"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "Pedido actualizado en nuevo estado"
+          schema:
+            $ref: "#/definitions/Pedido_Avanzar"
+        "400":
+          description: "Ingrese todos los datos requeridos por favor!"
+        "403":
+          description: "Peticion no autorizada"
+        "x-*":
+          schema:
+            $ref: "#/definitions/Error_Default"
+            
+  /pedidos/cancelar/{nombre_usuario}:
+    put:
+      tags:
+      - "Pedidos"
+      summary: "Eliminar Pedido --> (SOLO ADMIN)"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "nombre_usuario"
+        description: "Ingrese nombre de usuario (o mail personal)."
+        in: "path"
+        required: true
+        type: "string"
+      - name: "id_pedido"
+        in: "query"
+        required: true
+        type: "integer"
+      - name: "Authorization"
+        description: "Ingrese el token generado anteponiendo 'bearer ' "
+        in: "header"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "Pedido eliminado correctamente"
+        "403":
+          description: "Peticion no autorizada"
+        "404":
+          description: "Pedido inexistente, por favor intente de nuevo!"
+        "x-*":
+          schema:
+            $ref: "#/definitions/Error_Default"
+
+  /producto/listar/{nombre_usuario}:
+    get:
+      tags:
+      - "Productos"
+      summary: "Listar todos los productos"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "nombre_usuario"
+        description: "Ingrese nombre de usuario (o mail personal)."
+        in: "path"
+        required: true
+        type: "string"
+      - name: "Authorization"
+        description: "Ingrese el token generado anteponiendo 'bearer ' "
+        in: "header"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Producto_Listar"
+        "403":
+          description: "Peticion no autorizada"
+        "404":
+          description: "URL icorrecta"
+        "x-*":
+          schema:
+            $ref: "#/definitions/Error_Default"
+            
+  /producto/crear/{nombre_usuario}:
+    post:
+      tags:
+      - "Productos"
+      summary: "Crear nuevo producto --> (SOLO ADMIN)"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "nombre_usuario"
+        description: "Ingrese nombre de usuario (o mail personal)."
+        in: "path"
+        required: true
+        type: "string"
+      - name: "Authorization"
+        description: "Ingrese el token generado anteponiendo 'bearer ' "
+        in: "header"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Parametros para crear producto"
+        required: true
+        schema:
+          $ref: "#/definitions/Producto_Crear"
+      responses:
+        "201":
+          description: "Producto creado correctamente"
+        "400":
+          description: "Ingrese todos los datos requeridos por favor!"
+        "403":
+          description: "Peticion no autorizada"
+        "409":
+          description: "El menu ya existe en la base de datos!"
+        "x-*":
+          schema:
+            $ref: "#/definitions/Error_Default"
+            
+  /producto/actualizar/{nombre_usuario}:
+    put:
+      tags:
+      - "Productos"
+      summary: "Actualizar producto --> (SOLO ADMIN)"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "nombre_usuario"
+        description: "Ingrese nombre de usuario (o mail personal)."
+        in: "path"
+        required: true
+        type: "string"
+      - name: "id_producto"
+        in: "query"
+        required: true
+        type: "integer"
+      - name: "Authorization"
+        description: "Ingrese el token generado anteponiendo 'bearer ' "
+        in: "header"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Parametros para actualizar producto"
+        schema:
+          $ref: "#/definitions/Producto_Actualizar"
+      responses:
+        "200":
+          description: "Usuario actualizado correctamente"
+        "400":
+          description: "Ingrese todos los datos requeridos por favor!"
+        "403":
+          description: "Peticion no autorizada"
+        "x-*":
+          schema:
+            $ref: "#/definitions/Error_Default"
+
+  /producto/eliminar/{nombre_usuario}:
+    delete:
+      tags:
+      - "Productos"
+      summary: "Eliminar Producto --> (SOLO ADMIN)"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "nombre_usuario"
+        description: "Ingrese nombre de usuario (o mail personal)."
+        in: "path"
+        required: true
+        type: "string"
+      - name: "id_producto"
+        in: "query"
+        required: true
+        type: "integer"
+      - name: "Authorization"
+        description: "Ingrese el token generado anteponiendo 'bearer ' "
+        in: "header"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "Producto eliminado correctamente"
+        "403":
+          description: "Peticion no autorizada"
+        "404":
+          description: "Producto inexistente, por favor intente de nuevo!"
+        "x-*":
+          schema:
+            $ref: "#/definitions/Error_Default"
+            
+definitions:
+  Usuario_Consultar:
+    type: "object"
+    properties:
+      nombre_usuario:
+        type: "string"
+        example: "string"
+        description: "Nombre de Usuario"
+        format: "int64"
+      nombre_apellido:
+        type: "string"
+        description: "Nombre y Apellido"
+        format: "int64"
+      mail:
+        type: "string"
+        description: "mail"
+        format: "int64"
+      telefono:
+        type: "integer"
+        description: "mail"
+        format: "int64"
+      direccion:
+        type: "string"
+        description: "mail"
+        format: "int64"
+
+  Usuario_Ingresar:
+    type: "object"
+    properties:
+      nombre_usuario:
+        type: "string"
+        description: "Nombre de Usuario"
+        format: "int64"
+      password:
+        type: "string"
+        description: "Password"
+        format: "int64"
+
+  Crear_Usuario:
+    type: "object"
+    properties:
+      nombre_usuario:
+        type: "string"
+        example: "Ingrese su nombre de usuario personal, ej: delilah_resto"
+        description: "Nombre de Usuario"
+        format: "int64"
+      nombre_apellido:
+        type: "string"
+        example: "Ingrese su Nombre y Apellido"
+        description: "Nombre y Apellido"
+        format: "int64"
+      mail:
+        type: "string"
+        example: "Ingrese su mail, ej: mail@personal.com"
+        description: "mail"
+        format: "int64"
+      telefono:
+        type: "string"
+        example: "Ingrese su numero de telefono, ej: 11-1234-5678"
+        description: "mail"
+        format: "int64"
+      direccion:
+        type: "string"
+        example: "Ingrese su direccion, ej: Av. Ejemplo 1234 PB timbre A"
+        description: "Direccion"
+        format: "int64"
+      password:
+        type: "string"
+        example: "Ingrese su contraseña personal"
+        description: "Password"
+        format: "int64"
+        
+  Actualizar_Usuario:
+    type: "object"
+    properties:
+      nombre_apellido:
+        type: "string"
+        description: "Nombre y Apellido"
+        format: "int64"
+      mail:
+        type: "string"
+        description: "mail"
+        format: "int64"
+      telefono:
+        type: "string"
+        description: "mail"
+        format: "int64"
+      direccion:
+        type: "string"
+        description: "mail"
+        format: "int64"
+      password:
+        type: "string"
+        description: "mail"
+        format: "int64"
+        
+  Pedidos:
+    type: "object"
+    properties:
+      id_pedido:
+        type: "integer"
+        description: "Id Pedido"
+        format: "int64"
+      estado:
+        type: "string"
+        description: "Estado Pedido"
+        format: "int64"
+      total:
+        type: "integer"
+        description: "Id Pedido"
+        format: "int64"
+      fecha:
+        type: "string"
+        description: "Fecha Pedido"
+        format: "date-time"
+        
+  Pedido_Confirmar:
+    type: "object"
+    properties:
+      forma_de_pago:
+        type: "integer"
+        description: "Forma de pago"
+        format: "int64"
+      productos:
+        type: "array"
+        items:
+          $ref: "#/definitions/Pedido_Confirmar_detalle"
+        
+  Pedido_Confirmar_detalle:
+    type: "object"
+    properties:
+      id_producto:
+        type: "integer"
+        description: "Nombre de Usuario"
+        format: "int64"
+      cantidad:
+        type: "integer"
+        description: "Nombre de Usuario"
+        format: "int64"
+        
+  Pedido_Confirmado:
+    type: "object"
+    properties:
+      id_pedido:
+        type: "integer"
+        description: "Id Pedido"
+        format: "int64"
+        
+  Pedido_Avanzar:
+    type: "object"
+    properties:
+      id_pedido:
+        type: "integer"
+        description: "Id Pedido"
+        format: "int64"
+      estado:
+        type: "string"
+        description: "Estado Pedido"
+        format: "int64"
+
+  Producto_Listar:
+    type: "object"
+    properties:
+      id_producto:
+        type: "integer"
+        description: "Id Producto"
+        format: "int64"
+      menu:
+        type: "string"
+        description: "Menu"
+        format: "int64"
+      precio:
+        type: "integer"
+        description: "Precio Menu"
+        format: "int64"
+        
+  Producto_Crear:
+    type: "object"
+    properties:
+      menu:
+        type: "string"
+        description: "Nombre del Menu"
+        format: "int64"
+      precio:
+        type: "integer"
+        description: "Precio Menu"
+        format: "int64"
+      disponibilidad:
+        type: "integer"
+        description: "Cantidad de productos disponibles"
+        format: "int64"
+        
+  Producto_Actualizar:
+    type: "object"
+    properties:
+      menu:
+        type: "string"
+        description: "Menu"
+        format: "int64"
+      precio:
+        type: "integer"
+        description: "Precio Menu"
+        format: "int64"
+      disponibilidad:
+        type: "integer"
+        description: "Cantidad de productos disponibles"
+        format: "int64"
+        
+  Token:
+    type: "object"
+    properties:
+      token:
+        type: "string"
+        example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+        
+  Error_Default:
+      type: "object"
+      properties:
+        error:
+          type: "string"
+          example: "Ups! a ocurrido un error: <error>"
+      required:
+        - "error"
+
+externalDocs:
+  description: "Repositorio GitHub"
+  url: "https://github.com/dariodossantos?tab=repositories"
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
